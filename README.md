@@ -24,39 +24,6 @@
 
 ---
 
-## Entregables
-
-### Documentación de Análisis (`docs/analisis/`)
-
-Contenidos mínimos:
-
-- **p1.** Objetivo y Alcance
-- **p2.** Descripción de alto nivel del sistema
-- **p3.** Requerimientos funcionales más relevantes
-- **p4.** Requerimientos no funcionales
-
-### Documentación de Diseño (`docs/diseño/`)
-
-El sistema debe diseñarse bajo el paradigma orientado a objetos contemplando:
-
-- **Extensibilidad** — el modelo debe poder extenderse fácilmente
-- **Mantenibilidad** — evitar duplicación de código y desacoplar subsistemas
-- **Gestión de errores** — jerarquía de excepciones que capture todos los errores en tiempo de ejecución
-
-Contenidos mínimos:
-
-- **p5.** Diagrama Conceptual
-- **p6.** Diagrama de clases del Modelo
-- **p7.** Diagrama de la Vista y Controlador
-- **p8.** Diagrama de Secuencia de al menos 5 Casos de Uso (alta interacción entre clases)
-- **p9.** Diagrama de Navegación de GUI
-
-Contenidos opcionales:
-- Diagrama de clases de un módulo o subsistema relevante
-- Diagrama de secuencia con su diagrama de clases asociado
-- Diagrama de estados con su diagrama de clases asociado
-
-> Cada vista se compone de diagrama + descripción. Las vistas deben ser consistentes entre sí.
 
 ### Código fuente (`src/`)
 
