@@ -68,3 +68,165 @@ Contenidos recomendados:
 | **Defensa del trabajo** | No asiste o no participa | Expone su rol y aportes con claridad | Responde con seguridad las preguntas | Relaciona conceptos de la materia y argumenta decisiones de diseño |
 
 ---
+## Estructura del proyecto
+
+```
+1982/                                 ← RAIZ del repositorio
+│
+├── README.md                               ← Explicación del proyecto para todos
+├── .gitignore                              ← Archivos que NO se suben a GitHub
+│
+├── docs/                                   ← 📄 DOCUMENTACIÓN
+│   ├── analisis/
+│   │
+│   └── manuales/
+│       ├── Manual_Integracion_Grupos.pdf   ← Guía para que los grupos integren su avión
+│       └── Contrato_Integracion.pdf        ← El contrato que deben firmar los grupos
+│
+├── lib/                                    ← 📚 LIBRERÍAS
+│   └── processing-core.jar                 ← Librería de Processing (para dibujar ventanas)
+│
+└── src/                                    ← 💻 CÓDIGO FUENTE
+    │
+    └── main/
+        │
+        └── java/
+            │
+            ├── contrato/                   ← 🔗 CONTRATO (interfaz común que TODOS usan)
+            │   │
+            │   ├── ModuloJuego.java
+            │   │   ← INTERFAZ PRINCIPAL. Contrato que TODOS los
+            │   │     aviones deben implementar. Define los métodos
+            │   │     obligatorios: iniciar(), pausar(), etc.
+            │   │
+            │   ├── EstadoJuego.java
+            │   │   ← INTERFAZ para el Patrón State. Define los
+            │   │     métodos que cada estado debe tener.
+            │   │
+            │   ├── NoIniciadoState.java
+            │   │   ← ESTADO: El juego fue creado pero aún no
+            │   │     se inició. Solo se puede llamar a iniciar().
+            │   │
+            │   ├── IniciandoState.java
+            │   │   ← ESTADO: El juego se está iniciando
+            │   │     (cargando imágenes, sonidos, etc.)
+            │   │
+            │   ├── EnEjecucionState.java
+            │   │   ← ESTADO: El juego está corriendo normalmente.
+            │   │     Desde aquí se puede pausar o finalizar.
+            │   │
+            │   ├── PausadoState.java
+            │   │   ← ESTADO: El juego está pausado.
+            │   │     Desde aquí se puede reanudar o finalizar.
+            │   │
+            │   ├── FinalizadoState.java
+            │   │   ← ESTADO: El juego terminó (ganó o perdió).
+            │   │     Es un estado terminal, no se puede hacer nada.
+            │   │
+            │   ├── ErrorState.java
+            │   │   ← ESTADO: Ocurrió un error en el juego.
+            │   │     El Home lo detecta y vuelve al menú.
+            │   │
+            │   ├── ContextoJuego.java
+            │   │   ← DATOS que el Home le pasa al avión.
+            │   │     Contiene: nombre del jugador, ancho y alto
+            │   │     de la pantalla. Es INMUTABLE (solo getters).
+            │   │
+            │   ├── EstadisticasGenerales.java
+            │   │   ← OBJETO que el avión le DEVUELVE al Home
+            │   │     al finalizar la partida. Contiene puntaje,
+            │   │     enemigos destruidos, tiempo jugado, etc.
+            │   │
+            │   └── JuegoException.java
+            │       ← Excepción BASE del juego. Todas las demás
+            │         excepciones heredan de esta.
+            │
+            ├── home/                       ← 🏠 HOME/LOBBY
+            │   │
+            │   ├── GameApp.java
+            │   │   ← PUNTO DE ENTRADA. Extiende PApplet de
+            │   │     Processing. Tiene main(), setup(), draw().
+            │   │     Es lo primero que se ejecuta.
+            │   │
+            │   ├── HomeJuego.java
+            │   │   ← ORQUESTADOR PRINCIPAL. Coordina todo el Home.
+            │   │     Maneja las pantallas, los gestores, y el
+            │   │     ciclo de vida de las partidas.
+            │   │
+            │   ├── GestorModulos.java
+            │   │   ← ADMINISTRA los aviones registrados.
+            │   │     Permite agregar, buscar y listar módulos.
+            │   │
+            │   ├── GestorEstadisticas.java
+            │   │   ← PROCESA las estadísticas. Acumula puntajes,
+            │   │     guarda en archivo, y calcula totales.
+            │   │
+            │   ├── ControladorNavegacion.java
+            │   │   ← MANEJA LA NAVEGACIÓN entre pantallas.
+            │   │     Home → Selección → Estadísticas → Juego.
+            │   │
+            │   ├── RepositorioEstadisticas.java
+            │   │   ← PERSISTENCIA. Lee y escribe estadísticas
+            │   │     en archivos .dat con serialización.
+            │   │
+            │   └── ui/                     ← INTERFAZ GRÁFICA del Home
+            │       │
+            │       ├── Pantalla.java
+            │       │   ← ENUM con las pantallas: INICIO,
+            │       │     SELECCION, ESTADISTICAS, JUEGO.
+            │       │
+            │       ├── Boton.java
+            │       │   ← CLASE REUTILIZABLE para botones.
+            │       │     Detecta hover, clics y dibuja estilo.
+            │       │
+            │       ├── PantallaInicio.java
+            │       │   ← PANTALLA DE INICIO. Muestra "1982"
+            │       │     y el botón START.
+            │       │
+            │       ├── PantallaSeleccion.java
+            │       │   ← PANTALLA DE SELECCIÓN. Muestra
+            │       │     botones de aviones y estadísticas.
+            │       │
+            │       └── PantallaEstadisticas.java
+            │           ← PANTALLA DE ESTADÍSTICAS.
+            │             Muestra ranking y puntajes.
+            │
+            ├── aviones/                    ← ✈️ AVIONES
+            │   │
+            │   ├── mirage/
+            │   │   ├── AvionMirage.java
+            │   │   └── recursos/
+            │   │       ├── imagenes/
+            │   │       └── sonidos/
+            │   │
+            │   ├── pucara/
+            │   │   ├── AvionPucara.java
+            │   │   └── recursos/
+            │   │
+            │   ├── skyhawk/
+            │   │   ├── AvionSkyhawk.java
+            │   │   └── recursos/
+            │   │
+            │   ├── etendard/
+            │   │   ├── AvionEtendard.java
+            │   │   └── recursos/
+            │   │
+            │   └── aermacchi/
+            │       ├── AvionAermacchi.java
+            │       └── recursos/
+            │
+            └── resources/                  ← 🖼️ RECURSOS COMPARTIDOS
+                │
+                ├── imagenes/
+                │   ├── 1982.png
+                │   ├── fondo_inicio.png
+                │   ├── fondo_seleccion.png
+                │   └── iconos/
+                │       ├── mirage_icon.png
+                │       ├── pucara_icon.png
+                │       └── ...
+                │
+                └── fonts/
+                    └── PressStart2P-Regular.ttf
+```
+
