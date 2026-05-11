@@ -9,7 +9,7 @@
 | Avión Aermacchi MB-339 | Piloteado por Owen Crippa |
 | Avión Mirage | Fuerza Aérea Argentina |
 | Avión Super Etendard | Armada Argentina |
-| Tutorial Interactivo | Tutorial de juego |
+
 
 ---
 ## Cronograma de entregas
