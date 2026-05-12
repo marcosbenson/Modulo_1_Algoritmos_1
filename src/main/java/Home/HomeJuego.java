@@ -174,16 +174,19 @@ public class HomeJuego implements IModuloObserver {
     /** Finaliza el modulo actual y guarda estadisticas */
     private void finalizarModuloActual() {
         if (moduloActual != null) {
-            moduloActual.finalizar();
+            // IMPORTANTE: remover observer ANTES de finalizar
+            // para evitar recursion infinita (finalizar -> notificar -> onEvento -> finalizar)
+            ModuloJuego modulo = moduloActual;
+            moduloActual = null;
+            modulo.removerObserver(this);
 
-            // Guardar estadisticas
-            EstadisticasGenerales stats = moduloActual.getEstadisticasGenerales();
+            // Guardar estadisticas antes de finalizar
+            EstadisticasGenerales stats = modulo.getEstadisticasGenerales();
             if (stats != null) {
                 gestorEstadisticas.guardarEstadisticas(stats);
             }
 
-            moduloActual.removerObserver(this);
-            moduloActual = null;
+            modulo.finalizar();
         }
         controladorNav.irSeleccionModulo();
     }
