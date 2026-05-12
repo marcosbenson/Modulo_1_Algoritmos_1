@@ -9,6 +9,8 @@ import java.util.List;
  * Pantalla de seleccion de modulos.
  * Muestra un boton por cada modulo registrado, mas botones de
  * ESTADISTICAS y VOLVER.
+ *
+ * Controles: W/S para navegar, ENTER para seleccionar, ESC para volver.
  */
 public class PantallaSeleccion {
 
@@ -17,12 +19,17 @@ public class PantallaSeleccion {
     private Boton botonEstadisticas;
     private Boton botonVolver;
 
+    // Todos los botones en orden para navegacion por teclado
+    private List<Boton> todosBotones;
+    private int indiceSeleccion;
+
     /**
      * Construye la pantalla con los modulos disponibles.
      */
     public PantallaSeleccion(List<ModuloJuego> modulos, float anchoPantalla, float altoPantalla) {
         botonesModulos = new ArrayList<Boton>();
         nombresModulos = new ArrayList<String>();
+        todosBotones = new ArrayList<Boton>();
 
         float centroX = anchoPantalla / 2;
         float inicioY = 160;
@@ -32,16 +39,67 @@ public class PantallaSeleccion {
             ModuloJuego modulo = modulos.get(i);
             String nombre = modulo.getNombreAvion();
             float y = inicioY + i * 60;
-            botonesModulos.add(new Boton(nombre, centroX, y, 300, 45));
+            Boton boton = new Boton(nombre, centroX, y, 300, 45);
+            botonesModulos.add(boton);
             nombresModulos.add(modulo.getNombreModulo());
+            todosBotones.add(boton);
         }
 
         // Boton estadisticas
         float yStats = inicioY + modulos.size() * 60 + 20;
         botonEstadisticas = new Boton("ESTADISTICAS", centroX, yStats, 300, 45);
+        todosBotones.add(botonEstadisticas);
 
         // Boton volver
         botonVolver = new Boton("VOLVER", centroX, yStats + 60, 300, 45);
+        todosBotones.add(botonVolver);
+
+        // Seleccionar el primer boton por defecto
+        indiceSeleccion = 0;
+        actualizarSeleccion();
+    }
+
+    /** Actualiza cual boton esta seleccionado visualmente */
+    private void actualizarSeleccion() {
+        for (int i = 0; i < todosBotones.size(); i++) {
+            todosBotones.get(i).setSeleccionado(i == indiceSeleccion);
+        }
+    }
+
+    /** Mueve la seleccion hacia arriba (W) */
+    public void moverArriba() {
+        indiceSeleccion--;
+        if (indiceSeleccion < 0) {
+            indiceSeleccion = todosBotones.size() - 1; // wrap around
+        }
+        actualizarSeleccion();
+    }
+
+    /** Mueve la seleccion hacia abajo (S) */
+    public void moverAbajo() {
+        indiceSeleccion++;
+        if (indiceSeleccion >= todosBotones.size()) {
+            indiceSeleccion = 0; // wrap around
+        }
+        actualizarSeleccion();
+    }
+
+    /**
+     * Confirma la seleccion actual (ENTER).
+     * Devuelve: nombre del modulo, "ESTADISTICAS", "VOLVER", o null.
+     */
+    public String confirmarSeleccion() {
+        Boton seleccionado = todosBotones.get(indiceSeleccion);
+
+        // Es un boton de modulo?
+        for (int i = 0; i < botonesModulos.size(); i++) {
+            if (botonesModulos.get(i) == seleccionado) {
+                return nombresModulos.get(i);
+            }
+        }
+
+        // Es estadisticas o volver?
+        return seleccionado.getTexto(); // "ESTADISTICAS" o "VOLVER"
     }
 
     public void dibujar(PApplet app) {
@@ -66,6 +124,12 @@ public class PantallaSeleccion {
         // Boton estadisticas y volver
         botonEstadisticas.dibujar(app);
         botonVolver.dibujar(app);
+
+        // Instrucciones de controles
+        app.fill(0, 120, 0);
+        app.textSize(8);
+        app.textAlign(PApplet.CENTER, PApplet.CENTER);
+        app.text("W/S: navegar  |  ENTER: seleccionar  |  ESC: volver", app.width / 2, app.height - 20);
     }
 
     /**

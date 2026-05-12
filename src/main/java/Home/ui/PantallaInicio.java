@@ -4,6 +4,7 @@ import processing.core.PApplet;
 
 /**
  * Pantalla de inicio: muestra el titulo "1982" y un boton START.
+ * Controles: ENTER o clic para iniciar.
  */
 public class PantallaInicio {
 
@@ -11,6 +12,7 @@ public class PantallaInicio {
 
     public PantallaInicio(float anchoPantalla, float altoPantalla) {
         this.botonStart = new Boton("START", anchoPantalla / 2, altoPantalla / 2 + 80, 200, 50);
+        this.botonStart.setSeleccionado(true); // siempre seleccionado (unico boton)
     }
 
     public void dibujar(PApplet app) {
@@ -30,11 +32,11 @@ public class PantallaInicio {
         // Boton START
         botonStart.dibujar(app);
 
-        // Texto parpadeante "Press START"
+        // Texto parpadeante
         if (app.frameCount % 60 < 40) {
             app.fill(0, 180, 0);
             app.textSize(10);
-            app.text(">>> PRESS START <<<", app.width / 2, app.height / 2 + 140);
+            app.text(">>> PRESS ENTER <<<", app.width / 2, app.height / 2 + 140);
         }
     }
 

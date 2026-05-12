@@ -100,7 +100,12 @@ public class HomeJuego implements IModuloObserver {
         app.fill(0, 200, 0);
         app.textSize(10);
         app.text("Simulacion de partida en curso...", app.width / 2, app.height / 2 + 40);
-        app.text("ESC para volver al menu", app.width / 2, app.height / 2 + 60);
+
+        // Mostrar controles del juego
+        app.fill(0, 120, 0);
+        app.textSize(8);
+        app.text("W: arriba  |  A: izquierda  |  S: abajo  |  D: derecha", app.width / 2, app.height - 60);
+        app.text("SPACE: disparar  |  ESC: salir al menu", app.width / 2, app.height - 40);
 
         // Auto-finalizar cuando se acaba el tiempo
         if (tiempoJuegoFrames <= 0) {
@@ -134,19 +139,66 @@ public class HomeJuego implements IModuloObserver {
                 }
                 break;
             case JUEGO:
-                // No hay botones en la pantalla de juego
                 break;
         }
     }
 
-    /** Maneja teclas */
+    /** Maneja teclas: W/S navegar, ENTER seleccionar, ESC volver */
     public void manejarTecla(char key, int keyCode) {
-        // ESC vuelve al menu desde el juego
-        if (key == 27 || key == PApplet.ESC) { // ESC
-            if (controladorNav.getPantallaActual() == Pantalla.JUEGO) {
-                finalizarModuloActual();
-                // Evitar que Processing cierre la ventana con ESC
-                app.key = 0;
+        Pantalla actual = controladorNav.getPantallaActual();
+
+        // ESC: volver o salir
+        if (key == 27) {
+            app.key = 0; // evitar que Processing cierre la ventana
+            switch (actual) {
+                case JUEGO:
+                    finalizarModuloActual();
+                    break;
+                case SELECCION:
+                    controladorNav.irHome();
+                    break;
+                case ESTADISTICAS:
+                    controladorNav.irSeleccionModulo();
+                    break;
+                case INICIO:
+                    // No hacer nada en la pantalla de inicio
+                    break;
+            }
+            return;
+        }
+
+        // ENTER: seleccionar
+        if (key == '\n' || key == '\r') {
+            switch (actual) {
+                case INICIO:
+                    controladorNav.irSeleccionModulo();
+                    break;
+                case SELECCION:
+                    String resultado = pantallaSeleccion.confirmarSeleccion();
+                    if ("ESTADISTICAS".equals(resultado)) {
+                        controladorNav.irEstadisticas();
+                    } else if ("VOLVER".equals(resultado)) {
+                        controladorNav.irHome();
+                    } else if (resultado != null) {
+                        seleccionarModulo(resultado);
+                    }
+                    break;
+                case ESTADISTICAS:
+                    controladorNav.irSeleccionModulo();
+                    break;
+                case JUEGO:
+                    break;
+            }
+            return;
+        }
+
+        // W/S: navegar menus
+        if (actual == Pantalla.SELECCION) {
+            if (key == 'w' || key == 'W') {
+                pantallaSeleccion.moverArriba();
+            }
+            if (key == 's' || key == 'S') {
+                pantallaSeleccion.moverAbajo();
             }
         }
     }
