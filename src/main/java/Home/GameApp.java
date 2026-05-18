@@ -1,5 +1,6 @@
 package Home;
 
+import Home.ui.PantallaInicio;
 import processing.core.PApplet;
 import processing.core.PFont;
 
@@ -25,9 +26,12 @@ public class GameApp extends PApplet {
         // Crear Home y registrar modulos
         homeJuego = new HomeJuego(this);
 
+
         // Registrar el modulo de prueba
         homeJuego.registrarModulo(new Aviones.AvionPrueba.ModuloPrueba());
 
+        PantallaInicio.cargarFondo(this);
+        
         // Inicializar
         homeJuego.iniciarHome();
     }
