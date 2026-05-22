@@ -1,6 +1,6 @@
 ## Branch: processing-ide
 
-Este branch contiene el proyecto adaptado para correr desde **Processing IDE**. Podés encontrar información sobre cómo ejecutar el juego en `COMO_EJECUTAR.md`··
+Este branch contiene el proyecto adaptado para correr desde **Processing IDE**. Podés encontrar información sobre cómo ejecutar el juego en `COMO_EJECUTAR.md`<br>
 El branch `main` contiene la versión original con estructura Maven y paquetes Java.
 
 ---
