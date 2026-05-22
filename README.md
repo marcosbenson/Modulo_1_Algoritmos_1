@@ -4,6 +4,10 @@ Este branch contiene el proyecto adaptado para correr desde **Processing IDE**. 
 El branch `main` contiene la versión original con estructura Maven y paquetes Java.
 
 ---
+## AVISO
+Estás en el branch Main, este contenido no está hecho para ser ejecutado en processing, se puede ejecutar en VS Code o la terminal, de acuerdo a lo indicado en el archivo COMO_EJECUTAR.md
+El branch processing-ide contiene los archivos necesarios para que el juego corra en processing, al igual que instrucciones para integrar correctamente.
+
 # Modulo 1 - Lobby del Juego
 ## Módulos del juego (por grupo)
 
