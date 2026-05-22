@@ -3,7 +3,6 @@
 ## Requisitos previos
 
 - **Java 8 o superior** instalado (`java` y `javac` disponibles en la terminal)
-- **Processing core.jar** ya incluido en `lib/` (no hace falta instalar nada más)
 
 Para verificar que Java está instalado:
 
@@ -33,39 +32,8 @@ También se puede usar el **mouse** para hacer clic en los botones de los menús
 
 ---
 
-## Opción 1: Ejecutar desde la terminal (recomendado)
 
-### Linux / macOS
-
-```bash
-# Dar permisos de ejecución (solo la primera vez)
-chmod +x run.sh
-
-# Ejecutar
-./run.sh
-```
-
-### Windows
-
-```cmd
-run.bat
-```
-
-### Qué hace el script
-
-1. Limpia la carpeta `out/` (compilados anteriores)
-2. Copia los recursos (imágenes, fuentes) a `out/`
-3. Compila todos los `.java` contra `lib/core.jar`
-4. Ejecuta `Home.GameApp` (el punto de entrada del juego)
-
----
-
-## Opción 2: Ejecutar desde Processing IDE
-
-El proyecto usa **paquetes Java** (`package Contrato`, `package Home`, etc.) para organizar el código
-según los principios de POO. Por eso no se puede abrir directamente como un sketch `.pde`.
-
-Para ejecutarlo desde Processing IDE, seguí estos pasos:
+## Ejecutar desde Processing IDE
 
 ### Paso 1: Abrir Processing IDE
 
@@ -86,71 +54,14 @@ Abrir la aplicación Processing. Si no la tenés:
 
 ### Paso 4: Copiar los archivos del proyecto
 
-Copiar todo el contenido de `src/main/java/` dentro de la carpeta del sketch:
+Copiar todo el contenido del branch `processing-ide` dentro de la carpeta del sketch
 
-```bash
-# Desde la raiz del proyecto
-cp -r src/main/java/* ~/sketchbook/Game1982/
-# o donde sea que Processing haya guardado el sketch
-```
 
-La carpeta del sketch debería quedar así:
-
-```
-Game1982/
-├── Game1982.pde          ← archivo principal (lo editamos en el paso 5)
-├── Contrato/             ← paquete del contrato
-│   ├── ModuloJuego.java
-│   ├── EstadoJuego.java
-│   └── ...
-├── Home/                 ← paquete del Home
-│   ├── GameApp.java
-│   ├── HomeJuego.java
-│   └── ui/
-│       └── ...
-└── Aviones/              ← paquete de aviones
-    └── AvionPrueba/
-        └── ModuloPrueba.java
-```
-
-### Paso 5: Editar el archivo .pde
-
-Reemplazar el contenido de `Game1982.pde` con:
-
-```java
-// Punto de entrada para Processing IDE.
-// La logica real esta en Home/GameApp.java.
-// Este archivo solo lanza la aplicacion.
-
-void setup() {
-  // Processing IDE requiere un setup() en el .pde,
-  // pero nosotros usamos PApplet.main() en GameApp.
-}
-
-// Para ejecutar: usar Run (boton Play) o el menu Sketch > Run
-// NOTA: si no funciona directamente, ejecutar desde terminal con run.sh
-```
-
-> **Nota importante**: Processing IDE tiene limitaciones con proyectos que usan paquetes Java
-> en subdirectorios. Si el botón Play no funciona, usá la terminal con `./run.sh`.
-> El script usa exactamente la misma librería `core.jar` de Processing.
-
-### Paso 6: Copiar la fuente
-
-Copiar la fuente al directorio `data/` del sketch:
-
-```bash
-mkdir -p ~/sketchbook/Game1982/data
-cp src/main/Resources/fonts/PressStart2P-Regular.ttf ~/sketchbook/Game1982/data/
-```
-
-### Paso 7: Ejecutar
+### Paso 5: Ejecutar
 
 Hacer clic en el botón **▶ Play** del IDE de Processing, o usar `Sketch` → `Run`.
 
-> Si Processing IDE no reconoce los paquetes, la forma más confiable es ejecutar
-> desde la terminal con `./run.sh` (Linux/macOS) o `run.bat` (Windows).
-> Ambos métodos usan Processing `core.jar` — es el mismo resultado.
+
 
 ---
 
