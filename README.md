@@ -4,6 +4,7 @@ Este branch contiene el proyecto adaptado para correr desde **Processing IDE**. 
 El branch `main` contiene la versión original con estructura Maven y paquetes Java.
 
 ---
+
 # Modulo 1 - Lobby del Juego
 ## Módulos del juego (por grupo)
 
