@@ -1,21 +1,11 @@
-# Cómo ejecutar 1982
+# Cómo ejecutar 1982 desde Processing IDE
 
 ## Requisitos previos
 
-- **Java 8 o superior** instalado (`java` y `javac` disponibles en la terminal)
-- **Processing core.jar** ya incluido en `lib/` (no hace falta instalar nada más)
+- **Processing IDE 4.x o superior** instalado
+- No se requiere ninguna otra dependencia
 
-Para verificar que Java está instalado:
-
-```bash
-java -version
-javac -version
-```
-
-Si no aparece la versión, instalá Java:
-- **Ubuntu/Debian**: `sudo apt install default-jdk`
-- **macOS**: `brew install openjdk`
-- **Windows**: Descargar desde [adoptium.net](https://adoptium.net/)
+Descargar Processing desde [processing.org](https://processing.org/download)
 
 ---
 
@@ -24,133 +14,93 @@ Si no aparece la versión, instalá Java:
 | Tecla | Acción |
 |-------|--------|
 | **ENTER** | Seleccionar / Confirmar |
-| **ESC** | Volver / Salir del juego |
-| **W** / **S** | Navegar menús (arriba/abajo) |
-| **W** / **A** / **S** / **D** | Mover avión (en juego) |
-| **ESPACIO** | Disparar (en juego) |
+| **ESC** | Volver / Pausar |
+| **W** / **S** o flechas | Navegar menús |
+| **Q** | Finalizar partida |
 
 También se puede usar el **mouse** para hacer clic en los botones de los menús.
 
 ---
 
-## Opción 1: Ejecutar desde la terminal (recomendado)
+## Cómo ejecutar
 
-### Linux / macOS
+### Paso 1: Clonar o descargar el branch
 
 ```bash
-# Dar permisos de ejecución (solo la primera vez)
-chmod +x run.sh
-
-# Ejecutar
-./run.sh
+git clone -b processing-ide https://github.com/marcosbenson/Modulo_1_Algoritmos_1.git
 ```
 
-### Windows
+O descargar el ZIP desde GitHub seleccionando el branch `processing-ide`.
 
-```cmd
-run.bat
-```
+### Paso 2: Abrir en Processing IDE
 
-### Qué hace el script
+1. Abrir Processing IDE
+2. Ir a `Archivo` → `Abrir`
+3. Navegar hasta la carpeta descargada
+4. Seleccionar el archivo `Game1982.pde`
 
-1. Limpia la carpeta `out/` (compilados anteriores)
-2. Copia los recursos (imágenes, fuentes) a `out/`
-3. Compila todos los `.java` contra `lib/core.jar`
-4. Ejecuta `Home.GameApp` (el punto de entrada del juego)
+### Paso 3: Ejecutar
+
+Hacer clic en el botón **▶ Play** o usar `Sketch` → `Run`.
 
 ---
 
-## Opción 2: Ejecutar desde Processing IDE
+## Estadísticas
 
-El proyecto usa **paquetes Java** (`package Contrato`, `package Home`, etc.) para organizar el código
-según los principios de POO. Por eso no se puede abrir directamente como un sketch `.pde`.
+Las estadísticas se guardan automáticamente en formato JSON en la carpeta
+`estadisticas/` dentro del directorio del sketch. Persisten entre sesiones.
 
-Para ejecutarlo desde Processing IDE, seguí estos pasos:
+---
 
-### Paso 1: Abrir Processing IDE
+## Cómo integrar un módulo de avión
 
-Abrir la aplicación Processing. Si no la tenés:
-- **Linux**: `sudo snap install processing` o descargar de [processing.org](https://processing.org/download)
-- **Windows/macOS**: Descargar de [processing.org](https://processing.org/download)
-
-### Paso 2: Cambiar a Modo Java
-
-1. En la esquina superior derecha del IDE, donde dice **"Java"**, verificar que esté seleccionado.
-2. Si dice otra cosa (p5.js, Python), hacer clic y seleccionar **Java**.
-
-### Paso 3: Crear un nuevo sketch
-
-1. `Archivo` → `Nuevo`
-2. `Archivo` → `Guardar como...` → Guardar con el nombre **`Game1982`**
-3. Processing va a crear una carpeta `Game1982/` con un archivo `Game1982.pde`
-
-### Paso 4: Copiar los archivos del proyecto
-
-Copiar todo el contenido de `src/main/java/` dentro de la carpeta del sketch:
-
-```bash
-# Desde la raiz del proyecto
-cp -r src/main/java/* ~/sketchbook/Game1982/
-# o donde sea que Processing haya guardado el sketch
-```
-
-La carpeta del sketch debería quedar así:
-
-```
-Game1982/
-├── Game1982.pde          ← archivo principal (lo editamos en el paso 5)
-├── Contrato/             ← paquete del contrato
-│   ├── ModuloJuego.java
-│   ├── EstadoJuego.java
-│   └── ...
-├── Home/                 ← paquete del Home
-│   ├── GameApp.java
-│   ├── HomeJuego.java
-│   └── ui/
-│       └── ...
-└── Aviones/              ← paquete de aviones
-    └── AvionPrueba/
-        └── ModuloPrueba.java
-```
-
-### Paso 5: Editar el archivo .pde
-
-Reemplazar el contenido de `Game1982.pde` con:
+1. Crear una clase Java que implemente la interfaz `ModuloJuego`
+2. Implementar todos sus métodos incluyendo `dibujar()`, `actualizar()` y `reset()`
+3. Copiar el archivo `.java` a la carpeta del sketch
+4. Registrar el módulo en `Game1982.pde`:
 
 ```java
-// Punto de entrada para Processing IDE.
-// La logica real esta en Home/GameApp.java.
-// Este archivo solo lanza la aplicacion.
-
-void setup() {
-  // Processing IDE requiere un setup() en el .pde,
-  // pero nosotros usamos PApplet.main() en GameApp.
-}
-
-// Para ejecutar: usar Run (boton Play) o el menu Sketch > Run
-// NOTA: si no funciona directamente, ejecutar desde terminal con run.sh
+homeJuego.registrarModulo(new TuAvion());
 ```
 
-> **Nota importante**: Processing IDE tiene limitaciones con proyectos que usan paquetes Java
-> en subdirectorios. Si el botón Play no funciona, usá la terminal con `./run.sh`.
-> El script usa exactamente la misma librería `core.jar` de Processing.
+5. Eliminar `ModuloPrueba.java` si ya no se necesita
 
-### Paso 6: Copiar la fuente
+---
 
-Copiar la fuente al directorio `data/` del sketch:
+## Estructura del proyecto
 
-```bash
-mkdir -p ~/sketchbook/Game1982/data
-cp src/main/Resources/fonts/PressStart2P-Regular.ttf ~/sketchbook/Game1982/data/
 ```
-
-### Paso 7: Ejecutar
-
-Hacer clic en el botón **▶ Play** del IDE de Processing, o usar `Sketch` → `Run`.
-
-> Si Processing IDE no reconoce los paquetes, la forma más confiable es ejecutar
-> desde la terminal con `./run.sh` (Linux/macOS) o `run.bat` (Windows).
-> Ambos métodos usan Processing `core.jar` — es el mismo resultado.
+Game1982.pde                     <- punto de entrada
+ModuloJuego.java                 <- interfaz principal a implementar
+EstadoJuego.java                 <- interfaz del patron State
+IModuloObserver.java             <- interfaz del patron Observer
+ContextoJuego.java               <- contexto inmutable del juego
+ModuloEvento.java                <- eventos entre modulo y observer
+JuegoException.java              <- base de excepciones
+EstadoInvalidoException.java     <- operacion invalida segun estado
+ModuloNoEncontradoException.java <- modulo no registrado
+PersistenciaException.java       <- error de lectura/escritura
+NoIniciadoState.java             <- estados concretos patron State
+IniciandoState.java
+EnEjecucionState.java
+PausadoState.java
+FinalizadoState.java
+ErrorState.java
+GestorModulos.java               <- gestores
+GestorEstadisticas.java
+ControladorNavegacion.java
+Pantalla.java
+RepositorioEstadisticas.java     <- persistencia
+RepositorioEstadisticasArchivo.java
+EstadisticasGenerales.java
+Boton.java                       <- UI
+PantallaInicio.java
+PantallaSeleccion.java
+PantallaEstadisticas.java
+HomeJuego.java                   <- orquestador principal
+ModuloPrueba.java                <- modulo de prueba (removible)
+data/                            <- fuente pixel art
+```
 
 ---
 
@@ -158,20 +108,7 @@ Hacer clic en el botón **▶ Play** del IDE de Processing, o usar `Sketch` → 
 
 | Problema | Solución |
 |----------|----------|
-| `javac: command not found` | Instalar Java JDK (ver arriba) |
-| `Error: Could not find or load main class` | Ejecutar el script desde la raíz del proyecto |
-| Pantalla negra sin nada | Verificar que `src/main/Resources/fonts/` contiene la fuente TTF |
+| Pantalla negra sin texto | Verificar que data/PressStart2P-Regular.ttf existe |
 | El juego no cierra | Cerrar la ventana con la X |
-| ESC no funciona | Hacer clic primero en la ventana del juego para que tenga foco |
-
----
-
-## Estructura rápida
-
-```
-run.sh / run.bat     ← ejecutar esto
-lib/core.jar         ← librería de Processing (incluida)
-src/main/java/       ← código fuente
-src/main/Resources/  ← imágenes y fuentes
-out/                 ← se genera al compilar (ignorado por git)
-```
+| ESC no funciona | Hacer clic primero en la ventana del juego |
+| Error al guardar estadísticas | Verificar que Processing tiene permisos de escritura en la carpeta del sketch |
