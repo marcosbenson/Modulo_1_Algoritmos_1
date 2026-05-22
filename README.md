@@ -1,11 +1,10 @@
-# 1982: Conflicto del Atlántico Sur
 ## Branch: processing-ide
 
-Este branch contiene el proyecto adaptado para correr desde **Processing IDE**.
+Este branch contiene el proyecto adaptado para correr desde **Processing IDE**. Podés encontrar información sobre como ejecutar el juego en COMO_EJECUTAR.md
 El branch `main` contiene la versión original con estructura Maven y paquetes Java.
 
 ---
-
+# Modulo 1 - Lobby del Juego
 ## Módulos del juego (por grupo)
 
 | Módulo | Descripción |
