@@ -1,6 +1,9 @@
-## AVISO
-Estás en el branch Main, este contenido no está hecho para ser ejecutado en processing, se puede ejecutar en VS Code o la terminal, de acuerdo a lo indicado en el archivo COMO_EJECUTAR.md
-El branch processing-ide contiene los archivos necesarios para que el juego corra en processing, al igual que instrucciones para integrar correctamente.
+## Branch: processing-ide
+
+Este branch contiene el proyecto adaptado para correr desde **Processing IDE**. Podés encontrar información sobre cómo ejecutar el juego en `COMO_EJECUTAR.md`<br>
+El branch `main` contiene la versión original con estructura Maven y paquetes Java.
+
+---
 
 # Modulo 1 - Lobby del Juego
 ## Módulos del juego (por grupo)
@@ -14,8 +17,8 @@ El branch processing-ide contiene los archivos necesarios para que el juego corr
 | Avión Mirage | Fuerza Aérea Argentina |
 | Avión Super Etendard | Armada Argentina |
 
-
 ---
+
 ## Cronograma de entregas
 
 | Fecha | Tipo | Entregables |
@@ -28,28 +31,133 @@ El branch processing-ide contiene los archivos necesarios para que el juego corr
 
 ---
 
+## Cómo ejecutar
 
-### Código fuente (`src/`)
+Ver [COMO_EJECUTAR.md](COMO_EJECUTAR.md) para instrucciones detalladas.
 
-- Implementación en Java (versión 8 o superior)
-- El código compila sin errores
-- La ejecución no arroja excepciones inesperadas
-- Documentación de uso (se puede usar Javadoc)
-- Se valoran pruebas unitarias con JUnit
+**Resumen:**
+1. Abrir Processing IDE
+2. Ir a `Archivo` → `Abrir` → seleccionar `Game1982.pde`
+3. Presionar **▶ Play**
 
-### Presentación (defensa oral)
+---
 
-Contenidos recomendados:
-- Presentación de integrantes y responsabilidades
-- Breve descripción del análisis del problema
-- Detalle de la solución diseñada (al menos 1 caso de uso de los p5–p9)
-- Problemas encontrados y cómo se resolvieron
-- Posibles mejoras pendientes
-- Estrategias para incorporar nueva funcionalidad
-- Demostración funcional con un caso de uso
-- Conclusiones
+## Estructura del proyecto
 
-> **Todos los integrantes deben estar presentes.** Los docentes pueden preguntar a cualquier integrante sobre cualquier aspecto del trabajo.
+```
+Game1982.pde                     <- punto de entrada (Processing IDE)
+│
+├── Contratos e interfaces
+│   ├── ModuloJuego.java         <- INTERFAZ PRINCIPAL que todos los aviones deben implementar
+│   ├── EstadoJuego.java         <- interfaz del patron State
+│   ├── IModuloObserver.java     <- interfaz del patron Observer
+│   ├── ContextoJuego.java       <- datos que el Home le pasa al avion (inmutable)
+│   └── ModuloEvento.java        <- eventos entre modulo y observer
+│
+├── Excepciones
+│   ├── JuegoException.java      <- excepcion base del juego
+│   ├── EstadoInvalidoException.java
+│   ├── ModuloNoEncontradoException.java
+│   └── PersistenciaException.java
+│
+├── Estados (patron State)
+│   ├── NoIniciadoState.java     <- creado pero no iniciado, solo permite iniciar()
+│   ├── IniciandoState.java      <- cargando recursos, estado de transicion
+│   ├── EnEjecucionState.java    <- corriendo, permite pausar() y finalizar()
+│   ├── PausadoState.java        <- pausado, permite reanudar() y finalizar()
+│   ├── FinalizadoState.java     <- estado terminal, no permite nada
+│   └── ErrorState.java          <- error, solo permite finalizar() para limpieza
+│
+├── Gestores y navegacion
+│   ├── GestorModulos.java       <- administra los aviones registrados
+│   ├── GestorEstadisticas.java  <- procesa y acumula estadisticas
+│   ├── ControladorNavegacion.java <- maneja la navegacion entre pantallas
+│   └── Pantalla.java            <- enum: INICIO, SELECCION, ESTADISTICAS, JUEGO
+│
+├── Persistencia
+│   ├── RepositorioEstadisticas.java        <- interfaz de persistencia
+│   ├── RepositorioEstadisticasArchivo.java <- implementacion en JSON
+│   └── EstadisticasGenerales.java          <- objeto que el avion devuelve al finalizar
+│
+├── UI
+│   ├── Boton.java               <- boton reutilizable con deteccion de hover y clic
+│   ├── PantallaInicio.java      <- muestra "1982" y boton START
+│   ├── PantallaSeleccion.java   <- lista de aviones disponibles
+│   └── PantallaEstadisticas.java <- ranking y puntajes acumulados
+│
+├── Orquestador
+│   └── HomeJuego.java           <- coordina todo el Home, gestores y ciclo de vida
+│
+├── Modulo de prueba
+│   └── ModuloPrueba.java        <- modulo de prueba removible (ver abajo)
+│
+└── data/
+    └── PressStart2P-Regular.ttf <- fuente pixel art
+```
+
+---
+
+## Cómo integrar un módulo de avión
+
+Cada grupo debe:
+
+1. Crear una clase Java que implemente la interfaz `ModuloJuego`
+2. Implementar **todos** sus métodos:
+
+```java
+// Identidad
+String getNombreModulo();
+String getDescripcion();
+String getNombreAvion();
+
+// Ciclo de vida
+void inicializarContexto(ContextoJuego ctx);
+void iniciar() throws EstadoInvalidoException;
+void pausar() throws EstadoInvalidoException;
+void reanudar() throws EstadoInvalidoException;
+void finalizar() throws EstadoInvalidoException;
+void reset();
+
+// Estado y estadisticas
+EstadoJuego getEstado();
+EstadisticasGenerales getEstadisticasGenerales();
+
+// Observer
+void agregarObserver(IModuloObserver observer);
+void removerObserver(IModuloObserver observer);
+
+// Dibujo
+void actualizar(PApplet app);
+void dibujar(PApplet app);
+```
+
+3. Copiar el archivo `.java` a la carpeta del sketch junto a los demás archivos
+4. Registrar el módulo en `Game1982.pde`:
+
+```java
+homeJuego.registrarModulo(new AvionSkyhawk());
+```
+
+5. Eliminar `ModuloPrueba.java` si ya no se necesita
+
+> Ver `ModuloPrueba.java` como ejemplo de implementación completa.
+
+---
+
+## Módulo de prueba
+
+`ModuloPrueba.java` es un módulo de integración que simula una partida de 5 segundos.
+Sirve para probar el Home sin necesitar los módulos reales.
+**Es removible** — cuando todos los aviones estén integrados se puede eliminar.
+
+---
+
+## Estadísticas
+
+- Se guardan en formato **JSON** en la carpeta `estadisticas/` del sketch
+- **Persisten entre sesiones**
+- Se **acumulan** — cada partida suma al historial del módulo
+- Un archivo `.json` por módulo: `Skyhawk.json`, `Pucara.json`, etc.
 
 ---
 
@@ -72,165 +180,17 @@ Contenidos recomendados:
 | **Defensa del trabajo** | No asiste o no participa | Expone su rol y aportes con claridad | Responde con seguridad las preguntas | Relaciona conceptos de la materia y argumenta decisiones de diseño |
 
 ---
-## Estructura del proyecto
 
-```
-1982/                                 ← RAIZ del repositorio
-│
-├── README.md                               ← Explicación del proyecto para todos
-├── .gitignore                              ← Archivos que NO se suben a GitHub
-│
-├── docs/                                   ← 📄 DOCUMENTACIÓN
-│   ├── analisis/
-│   │
-│   └── manuales/
-│       ├── Manual_Integracion_Grupos.pdf   ← Guía para que los grupos integren su avión
-│       └── Contrato_Integracion.pdf        ← El contrato que deben firmar los grupos
-│
-├── lib/                                    ← 📚 LIBRERÍAS
-│   └── processing-core.jar                 ← Librería de Processing (para dibujar ventanas)
-│
-└── src/                                    ← 💻 CÓDIGO FUENTE
-    │
-    └── main/
-        │
-        └── java/
-            │
-            ├── contrato/                   ← 🔗 CONTRATO (interfaz común que TODOS usan)
-            │   │
-            │   ├── ModuloJuego.java
-            │   │   ← INTERFAZ PRINCIPAL. Contrato que TODOS los
-            │   │     aviones deben implementar. Define los métodos
-            │   │     obligatorios: iniciar(), pausar(), etc.
-            │   │
-            │   ├── EstadoJuego.java
-            │   │   ← INTERFAZ para el Patrón State. Define los
-            │   │     métodos que cada estado debe tener.
-            │   │
-            │   ├── NoIniciadoState.java
-            │   │   ← ESTADO: El juego fue creado pero aún no
-            │   │     se inició. Solo se puede llamar a iniciar().
-            │   │
-            │   ├── IniciandoState.java
-            │   │   ← ESTADO: El juego se está iniciando
-            │   │     (cargando imágenes, sonidos, etc.)
-            │   │
-            │   ├── EnEjecucionState.java
-            │   │   ← ESTADO: El juego está corriendo normalmente.
-            │   │     Desde aquí se puede pausar o finalizar.
-            │   │
-            │   ├── PausadoState.java
-            │   │   ← ESTADO: El juego está pausado.
-            │   │     Desde aquí se puede reanudar o finalizar.
-            │   │
-            │   ├── FinalizadoState.java
-            │   │   ← ESTADO: El juego terminó (ganó o perdió).
-            │   │     Es un estado terminal, no se puede hacer nada.
-            │   │
-            │   ├── ErrorState.java
-            │   │   ← ESTADO: Ocurrió un error en el juego.
-            │   │     El Home lo detecta y vuelve al menú.
-            │   │
-            │   ├── ContextoJuego.java
-            │   │   ← DATOS que el Home le pasa al avión.
-            │   │     Contiene: nombre del jugador, ancho y alto
-            │   │     de la pantalla. Es INMUTABLE (solo getters).
-            │   │
-            │   ├── EstadisticasGenerales.java
-            │   │   ← OBJETO que el avión le DEVUELVE al Home
-            │   │     al finalizar la partida. Contiene puntaje,
-            │   │     enemigos destruidos, tiempo jugado, etc.
-            │   │
-            │   └── JuegoException.java
-            │       ← Excepción BASE del juego. Todas las demás
-            │         excepciones heredan de esta.
-            │
-            ├── home/                       ← 🏠 HOME/LOBBY
-            │   │
-            │   ├── GameApp.java
-            │   │   ← PUNTO DE ENTRADA. Extiende PApplet de
-            │   │     Processing. Tiene main(), setup(), draw().
-            │   │     Es lo primero que se ejecuta.
-            │   │
-            │   ├── HomeJuego.java
-            │   │   ← ORQUESTADOR PRINCIPAL. Coordina todo el Home.
-            │   │     Maneja las pantallas, los gestores, y el
-            │   │     ciclo de vida de las partidas.
-            │   │
-            │   ├── GestorModulos.java
-            │   │   ← ADMINISTRA los aviones registrados.
-            │   │     Permite agregar, buscar y listar módulos.
-            │   │
-            │   ├── GestorEstadisticas.java
-            │   │   ← PROCESA las estadísticas. Acumula puntajes,
-            │   │     guarda en archivo, y calcula totales.
-            │   │
-            │   ├── ControladorNavegacion.java
-            │   │   ← MANEJA LA NAVEGACIÓN entre pantallas.
-            │   │     Home → Selección → Estadísticas → Juego.
-            │   │
-            │   ├── RepositorioEstadisticas.java
-            │   │   ← PERSISTENCIA. Lee y escribe estadísticas
-            │   │     en archivos .dat con serialización.
-            │   │
-            │   └── ui/                     ← INTERFAZ GRÁFICA del Home
-            │       │
-            │       ├── Pantalla.java
-            │       │   ← ENUM con las pantallas: INICIO,
-            │       │     SELECCION, ESTADISTICAS, JUEGO.
-            │       │
-            │       ├── Boton.java
-            │       │   ← CLASE REUTILIZABLE para botones.
-            │       │     Detecta hover, clics y dibuja estilo.
-            │       │
-            │       ├── PantallaInicio.java
-            │       │   ← PANTALLA DE INICIO. Muestra "1982"
-            │       │     y el botón START.
-            │       │
-            │       ├── PantallaSeleccion.java
-            │       │   ← PANTALLA DE SELECCIÓN. Muestra
-            │       │     botones de aviones y estadísticas.
-            │       │
-            │       └── PantallaEstadisticas.java
-            │           ← PANTALLA DE ESTADÍSTICAS.
-            │             Muestra ranking y puntajes.
-            │
-            ├── aviones/                    ← ✈️ AVIONES
-            │   │
-            │   ├── mirage/
-            │   │   ├── AvionMirage.java
-            │   │   └── recursos/
-            │   │       ├── imagenes/
-            │   │       └── sonidos/
-            │   │
-            │   ├── pucara/
-            │   │   ├── AvionPucara.java
-            │   │   └── recursos/
-            │   │
-            │   ├── skyhawk/
-            │   │   ├── AvionSkyhawk.java
-            │   │   └── recursos/
-            │   │
-            │   ├── etendard/
-            │   │   ├── AvionEtendard.java
-            │   │   └── recursos/
-            │   │
-            │   └── aermacchi/
-            │       ├── AvionAermacchi.java
-            │       └── recursos/
-            │
-            └── resources/                  ← 🖼️ RECURSOS COMPARTIDOS
-                │
-                ├── imagenes/
-                │   ├── 1982.png
-                │   ├── fondo_inicio.png
-                │   ├── fondo_seleccion.png
-                │   └── iconos/
-                │       ├── mirage_icon.png
-                │       ├── pucara_icon.png
-                │       └── ...
-                │
-                └── fonts/
-                    └── PressStart2P-Regular.ttf
-```
+## Presentación (defensa oral)
 
+Contenidos recomendados:
+- Presentación de integrantes y responsabilidades
+- Breve descripción del análisis del problema
+- Detalle de la solución diseñada (al menos 1 caso de uso)
+- Problemas encontrados y cómo se resolvieron
+- Posibles mejoras pendientes
+- Estrategias para incorporar nueva funcionalidad
+- Demostración funcional con un caso de uso
+- Conclusiones
+
+> **Todos los integrantes deben estar presentes.** Los docentes pueden preguntar a cualquier integrante sobre cualquier aspecto del trabajo.
