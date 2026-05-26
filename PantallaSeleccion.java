@@ -86,7 +86,7 @@ public class PantallaSeleccion {
   public void dibujar(PApplet app) {
     app.background(0);
 
-    app.fill(0, 255, 0);
+    app.fill(255);
     app.textSize(16);
     app.textAlign(PApplet.CENTER, PApplet.CENTER);
     app.text("SELECCIONAR MODULO", app.width / 2f, app.height * 0.12f);
@@ -95,7 +95,7 @@ public class PantallaSeleccion {
     app.strokeWeight(1);
     app.line(50, app.height * 0.19f, app.width - 50, app.height * 0.19f);
 
-    app.fill(0, 120, 0);
+    app.fill(255);
     app.textSize(8);
     app.text("W/S para navegar  |  ENTER para confirmar  |  ESC para volver", app.width / 2f, app.height * 0.24f);
 
@@ -104,7 +104,7 @@ public class PantallaSeleccion {
     botonVolver.dibujar(app);
 
     if (mensajeError != null) {
-      app.fill(255, 51, 0);
+      app.fill(255);
       app.textSize(8);
       app.textAlign(PApplet.CENTER, PApplet.CENTER);
       app.text("ERROR: " + mensajeError, app.width / 2f, app.height * 0.94f);

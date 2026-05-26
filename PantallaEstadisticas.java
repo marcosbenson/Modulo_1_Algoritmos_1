@@ -14,7 +14,7 @@ public class PantallaEstadisticas {
   public void dibujar(PApplet app, List<EstadisticasGenerales> estadisticas, int puntajeTotal) {
     app.background(0);
 
-    app.fill(0, 255, 0);
+    app.fill(255);
     app.textSize(16);
     app.textAlign(PApplet.CENTER, PApplet.CENTER);
     app.text("ESTADISTICAS", app.width / 2f, app.height * 0.10f);
@@ -24,7 +24,7 @@ public class PantallaEstadisticas {
     app.line(50, app.height * 0.17f, app.width - 50, app.height * 0.17f);
 
     if (estadisticas == null || estadisticas.isEmpty()) {
-      app.fill(0, 120, 0);
+      app.fill(255);
       app.textSize(9);
       app.textAlign(PApplet.CENTER, PApplet.CENTER);
       app.text("SIN DATOS AUN", app.width / 2f, app.height * 0.45f);
@@ -41,11 +41,11 @@ public class PantallaEstadisticas {
         app.fill(0, 24, 0);
         app.rect(40, cy, app.width - 80, rowH - 6, 3);
 
-        app.fill(0, 255, 0);
+        app.fill(255);
         app.textAlign(PApplet.LEFT, PApplet.TOP);
         app.text(s.getNombreModulo(), 55, cy + 6);
 
-        app.fill(0, 200, 0);
+        app.fill(255);
         app.text("PUNTAJE: " + s.getPuntajeTotal()
             + "   PARTIDAS: " + s.getPartidasJugadas()
             + "   VICTORIAS: " + s.getPartidasGanadas(), 55, cy + 22);
@@ -56,7 +56,7 @@ public class PantallaEstadisticas {
 
     app.stroke(0, 120, 0);
     app.line(50, app.height * 0.80f, app.width - 50, app.height * 0.80f);
-    app.fill(0, 255, 0);
+    app.fill(255);
     app.textSize(10);
     app.textAlign(PApplet.CENTER, PApplet.CENTER);
     app.text("PUNTAJE TOTAL DEL CURSO: " + puntajeTotal, app.width / 2f, app.height * 0.84f);
