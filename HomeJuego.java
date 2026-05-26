@@ -126,6 +126,8 @@ public class HomeJuego implements IModuloObserver {
       if (keyCode == PApplet.ESC) {
         app.key = 0;
         controladorNav.irSeleccionModulo();
+      } else if (keyCode == PApplet.ENTER || key == '\n') {
+        controladorNav.irSeleccionModulo();
       }
 
     } else if (actual == Pantalla.JUEGO && moduloActual != null) {
