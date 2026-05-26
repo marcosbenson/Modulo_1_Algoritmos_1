@@ -97,52 +97,61 @@ Game1982.pde                     <- punto de entrada (Processing IDE)
 
 ---
 
-## Cómo integrar un módulo de avión
+## Requisitos del módulo de avión
 
-Cada grupo debe:
+Cada grupo debe entregar una clase Java que implemente la interfaz `ModuloJuego`.
+El grupo del Lobby se encarga de la integración al proyecto.
 
-1. Crear una clase Java que implemente la interfaz `ModuloJuego`
-2. Implementar **todos** sus métodos:
+### Métodos obligatorios
 
 ```java
 // Identidad
-String getNombreModulo();
+String getNombreModulo();   // identificador único, sin espacios, coordinado con todos los grupos
 String getDescripcion();
-String getNombreAvion();
+String getNombreAvion();    // nombre que aparece en pantalla
 
 // Ciclo de vida
-void inicializarContexto(ContextoJuego ctx);
-void iniciar() throws EstadoInvalidoException;
-void pausar() throws EstadoInvalidoException;
-void reanudar() throws EstadoInvalidoException;
+void inicializarContexto(ContextoJuego ctx); // guardar el contexto para usar ancho/alto de pantalla
+void iniciar()   throws EstadoInvalidoException;
+void pausar()    throws EstadoInvalidoException;
+void reanudar()  throws EstadoInvalidoException;
 void finalizar() throws EstadoInvalidoException;
-void reset();
+void reset();    // limpiar estado interno para poder rejugar
 
-// Estado y estadisticas
+// Estado y estadísticas
 EstadoJuego getEstado();
-EstadisticasGenerales getEstadisticasGenerales();
+EstadisticasGenerales getEstadisticasGenerales(); // nunca devolver null
 
 // Observer
 void agregarObserver(IModuloObserver observer);
 void removerObserver(IModuloObserver observer);
 
-// Dibujo
+// Dibujo — llamados 60 veces por segundo
 void actualizar(PApplet app);
 void dibujar(PApplet app);
 ```
 
-3. Copiar el archivo `.java` a la carpeta del sketch junto a los demás archivos
-4. Registrar el módulo en `Game1982.pde`:
+### Requisitos de implementación
 
-```java
-homeJuego.registrarModulo(new AvionSkyhawk());
-```
+**Ciclo de vida:** cada método debe seguir el orden: validar con estado actual → cambiar estado → notificar observer. Si no notificás `FINALIZADO`, el Home nunca vuelve al menú ni guarda las estadísticas.
 
-5. Eliminar `ModuloPrueba.java` si ya no se necesita
+**Estados:** usar los estados provistos (`NoIniciadoState`, `IniciandoState`, etc.). La transición de `INICIANDO` a `EN_EJECUCION` la hace el propio módulo en `actualizar()` cuando termina de cargar.
 
-> Ver `ModuloPrueba.java` como ejemplo de implementación completa.
+**actualizar():** cortar la lógica si el estado no es `EN_EJECUCION` — sino el juego sigue corriendo pausado.
 
----
+**dibujar():** manejar los tres estados activos: `INICIANDO`, `EN_EJECUCION` y `PAUSADO`. Si no mostrás algo en `PAUSADO` la pantalla queda congelada sin aviso.
+
+**reset():** volver a `NoIniciadoState` y limpiar la lista de observers — sino la segunda partida tiene observers duplicados.
+
+**getEstadisticasGenerales():** nunca devolver `null` — el Home lo llama al finalizar para guardar.
+
+**Teclas:** no manejar ESC ni Q — el Home los intercepta para pausar, reanudar y finalizar.
+
+**Recursos:** usar nombres de archivo únicos que identifiquen tu módulo (ej: `skyhawk_fondo.png`) para evitar conflictos con otros grupos al integrar.
+
+**Tamaño de pantalla:** usar `contexto.getAnchoPantalla()` y `contexto.getAltoPantalla()` en lugar de valores hardcodeados.
+
+> Ver `ModuloPrueba.java` como ejemplo de implementación completa.---
 
 ## Módulo de prueba
 
