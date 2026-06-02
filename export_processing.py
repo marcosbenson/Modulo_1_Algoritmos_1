@@ -34,16 +34,12 @@ import argparse
 from pathlib import Path
 
 
-# ── CONFIGURACIÓN ─────────────────────────────────────────────────────────────
-
 REPO_ROOT     = Path(__file__).parent           # carpeta donde está el script
 CONTRACTS_DIR = REPO_ROOT / "contracts"
 LOBBY_DIR     = REPO_ROOT / "lobby"
 MODULES_DIR   = REPO_ROOT / "modules"
 PDE_FILE      = REPO_ROOT / "Game1982.pde"
 EXPORT_DIR    = REPO_ROOT / "processing-export" / "Game1982"
-
-# ── COLORES DE TERMINAL ───────────────────────────────────────────────────────
 
 GREEN  = "\033[92m"
 YELLOW = "\033[93m"
@@ -58,8 +54,6 @@ def err(msg):   print(f"  {RED}✗{RESET}  {msg}")
 def info(msg):  print(f"  {GRAY}→{RESET}  {msg}")
 def head(msg):  print(f"\n{BOLD}{msg}{RESET}")
 
-
-# ── FUNCIONES ─────────────────────────────────────────────────────────────────
 
 def copiar_java(src: Path, dest_dir: Path, dry_run: bool, etiqueta: str = ""):
     """Copia un .java a dest_dir. Si ya existe y es idéntico, lo indica."""
@@ -126,8 +120,6 @@ def listar_modulos():
     return [d.name for d in sorted(MODULES_DIR.iterdir()) if d.is_dir()]
 
 
-# ── EXPORTACIÓN ───────────────────────────────────────────────────────────────
-
 def exportar(modulos_filtro: list[str] | None, dry_run: bool):
     head("Verificando estructura del repositorio...")
     faltantes = validar_estructura()
@@ -137,7 +129,6 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
         sys.exit(1)
     ok("Estructura válida")
 
-    # ── Preparar carpeta de exportación ──────────────────────────────────────
     head(f"Preparando {EXPORT_DIR.relative_to(REPO_ROOT)}/...")
     if not dry_run:
         EXPORT_DIR.mkdir(parents=True, exist_ok=True)
@@ -145,7 +136,6 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
     else:
         info("(modo dry-run — no se modifica nada)")
 
-    # ── Recolectar todos los .java que se van a copiar ────────────────────────
     javas_contracts = sorted(CONTRACTS_DIR.glob("*.java"))
     javas_lobby     = sorted(LOBBY_DIR.glob("*.java"))
 
@@ -167,7 +157,6 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
     for m in modulos_a_exportar:
         javas_modulos += sorted((MODULES_DIR / m).glob("*.java"))
 
-    # ── Detectar conflictos de nombres ────────────────────────────────────────
     todos = javas_contracts + javas_lobby + javas_modulos
     conflictos = detectar_conflictos(todos)
     if conflictos:
@@ -175,23 +164,19 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
         for c in conflictos:
             warn(f"  '{c}' aparece más de una vez — solo se copiará la última versión")
 
-    # ── Copiar Game1982.pde ───────────────────────────────────────────────────
     head("Copiando Game1982.pde...")
     if not dry_run:
         shutil.copy2(PDE_FILE, EXPORT_DIR / "Game1982.pde")
     ok("Game1982.pde")
 
-    # ── Copiar contracts/ ─────────────────────────────────────────────────────
     head(f"Copiando contracts/ ({len(javas_contracts)} archivos)...")
     for java in javas_contracts:
         copiar_java(java, EXPORT_DIR, dry_run, "contracts")
 
-    # ── Copiar lobby/ ─────────────────────────────────────────────────────────
     head(f"Copiando lobby/ ({len(javas_lobby)} archivos)...")
     for java in javas_lobby:
         copiar_java(java, EXPORT_DIR, dry_run, "lobby")
 
-    # ── Copiar módulos ────────────────────────────────────────────────────────
     if modulos_a_exportar:
         head(f"Copiando módulos: {', '.join(modulos_a_exportar)}")
         for m in modulos_a_exportar:
@@ -206,13 +191,11 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
     else:
         warn("No se exportó ningún módulo (no hay módulos o el filtro no coincidió)")
 
-    # ── Copiar data/ de lobby si existe ───────────────────────────────────────
     lobby_data = LOBBY_DIR / "data"
     if lobby_data.exists():
         head("Copiando data/ del lobby...")
         copiar_datos(lobby_data, EXPORT_DIR / "data", dry_run, "lobby")
 
-    # ── Resumen ───────────────────────────────────────────────────────────────
     head("Resumen")
     if not dry_run:
         javas_en_export = list(EXPORT_DIR.glob("*.java"))
@@ -227,8 +210,6 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
         info("Dry-run completado. Corré sin --dry-run para aplicar los cambios.")
 
 
-# ── LIMPIEZA ──────────────────────────────────────────────────────────────────
-
 def limpiar(dry_run: bool):
     head(f"Limpiando {EXPORT_DIR.relative_to(REPO_ROOT)}/...")
     if not EXPORT_DIR.exists():
@@ -242,8 +223,6 @@ def limpiar(dry_run: bool):
     (EXPORT_DIR / "data").mkdir()
     ok("Carpeta limpiada")
 
-
-# ── MAIN ──────────────────────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser(
