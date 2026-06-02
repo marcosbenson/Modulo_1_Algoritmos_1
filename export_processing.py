@@ -9,7 +9,7 @@ Estructura esperada del repo:
   repo/
   ├── contracts/       ← interfaces y contratos (ModuloJuego, etc.)
   ├── lobby/           ← clases del Home (HomeJuego, Gestores, UI...)
-  ├── modules/
+  ├── modulos/
   │   ├── skyhawk/
   │   │   ├── ModuloSkyhawk.java
   │   │   ├── SkyhawkJugador.java
@@ -38,6 +38,8 @@ REPO_ROOT     = Path(__file__).parent           # carpeta donde está el script
 CONTRACTS_DIR = REPO_ROOT / "contracts"
 LOBBY_DIR     = REPO_ROOT / "lobby"
 MODULES_DIR   = REPO_ROOT / "modules"
+MODULOS_DIR   = REPO_ROOT / "modulos"
+DATA_DIR      = REPO_ROOT / "data"
 PDE_FILE      = REPO_ROOT / "Game1982.pde"
 EXPORT_DIR    = REPO_ROOT / "processing-export" / "Game1982"
 
@@ -105,19 +107,29 @@ def detectar_conflictos(javas: list[Path]) -> list[str]:
 def validar_estructura():
     """Verifica que existan las carpetas mínimas esperadas."""
     faltantes = []
-    for d in [CONTRACTS_DIR, LOBBY_DIR, MODULES_DIR]:
+    for d in [CONTRACTS_DIR, LOBBY_DIR]:
         if not d.exists():
             faltantes.append(str(d.relative_to(REPO_ROOT)))
+    if not MODULES_DIR.exists() and not MODULOS_DIR.exists():
+        faltantes.append("modulos/ o modules/")
     if not PDE_FILE.exists():
         faltantes.append("Game1982.pde")
     return faltantes
 
 
+def carpeta_modulos():
+    """Usa modulos/ si existe; mantiene compatibilidad con modules/."""
+    if MODULOS_DIR.exists():
+        return MODULOS_DIR
+    return MODULES_DIR
+
+
 def listar_modulos():
-    """Devuelve los módulos disponibles en modules/."""
-    if not MODULES_DIR.exists():
+    """Devuelve los módulos disponibles."""
+    base = carpeta_modulos()
+    if not base.exists():
         return []
-    return [d.name for d in sorted(MODULES_DIR.iterdir()) if d.is_dir()]
+    return [d.name for d in sorted(base.iterdir()) if d.is_dir()]
 
 
 def exportar(modulos_filtro: list[str] | None, dry_run: bool):
@@ -140,8 +152,9 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
     javas_lobby     = sorted(LOBBY_DIR.glob("*.java"))
 
     modulos_disponibles = listar_modulos()
+    base_modulos = carpeta_modulos()
     if not modulos_disponibles:
-        warn("No se encontraron módulos en modules/")
+        warn(f"No se encontraron módulos en {base_modulos.name}/")
     
     modulos_a_exportar = []
     for m in modulos_disponibles:
@@ -151,11 +164,11 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
     if modulos_filtro:
         no_encontrados = [m for m in modulos_filtro if m not in modulos_disponibles]
         for m in no_encontrados:
-            warn(f"Módulo '{m}' no encontrado en modules/ — ignorado")
+            warn(f"Módulo '{m}' no encontrado en {base_modulos.name}/ — ignorado")
 
     javas_modulos = []
     for m in modulos_a_exportar:
-        javas_modulos += sorted((MODULES_DIR / m).glob("*.java"))
+        javas_modulos += sorted((base_modulos / m).glob("*.java"))
 
     todos = javas_contracts + javas_lobby + javas_modulos
     conflictos = detectar_conflictos(todos)
@@ -180,7 +193,7 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
     if modulos_a_exportar:
         head(f"Copiando módulos: {', '.join(modulos_a_exportar)}")
         for m in modulos_a_exportar:
-            modulo_dir = MODULES_DIR / m
+            modulo_dir = base_modulos / m
             javas = sorted(modulo_dir.glob("*.java"))
             if not javas:
                 warn(f"  [{m}] no tiene archivos .java")
@@ -190,6 +203,10 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
             copiar_datos(modulo_dir / "data", EXPORT_DIR / "data", dry_run, m)
     else:
         warn("No se exportó ningún módulo (no hay módulos o el filtro no coincidió)")
+
+    if DATA_DIR.exists():
+        head("Copiando data/ raíz...")
+        copiar_datos(DATA_DIR, EXPORT_DIR / "data", dry_run, "data")
 
     lobby_data = LOBBY_DIR / "data"
     if lobby_data.exists():
@@ -261,13 +278,14 @@ Ejemplos:
 
     if args.list:
         modulos = listar_modulos()
+        base_modulos = carpeta_modulos()
         if modulos:
-            head("Módulos disponibles en modules/:")
+            head(f"Módulos disponibles en {base_modulos.name}/:")
             for m in modulos:
-                javas = list((MODULES_DIR / m).glob("*.java"))
+                javas = list((base_modulos / m).glob("*.java"))
                 info(f"  {m}  {GRAY}({len(javas)} .java){RESET}")
         else:
-            warn("No se encontraron módulos en modules/")
+            warn(f"No se encontraron módulos en {base_modulos.name}/")
         return
 
     if args.clean:
