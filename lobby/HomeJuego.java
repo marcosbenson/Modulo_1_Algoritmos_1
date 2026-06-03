@@ -31,7 +31,7 @@ public class HomeJuego implements IModuloObserver {
     gestorEstadisticas = new GestorEstadisticas(
         new RepositorioEstadisticasArchivo(app.sketchPath("estadisticas")));
     controladorNav = new ControladorNavegacion();
-    pantallaInicio = new PantallaInicio(app.width, app.height);
+    pantallaInicio = new PantallaInicio(app, app.width, app.height);
     pantallaSeleccion = new PantallaSeleccion(app.width, app.height);
     pantallaEstadisticas = new PantallaEstadisticas(app.width, app.height);
     tiempoJuegoFrames = 0;
