@@ -33,7 +33,9 @@ public class PantallaSeleccion {
     float bAlto = 44;
     float gap = 12;
     float totalH = modulos.size() * (bAlto + gap) - gap;
-    float inicioY = altoVentana * 0.35f - totalH / 2f;
+    float limiteInferiorInstrucciones = altoVentana * 0.28f; // margen bajo el texto de instrucciones
+    float centroIdeal = altoVentana * 0.35f - totalH / 2f;  // posicion centrada original
+    float inicioY = Math.max(centroIdeal, limiteInferiorInstrucciones);
 
     for (int i = 0; i < modulos.size(); i++) {
       ModuloJuego m = modulos.get(i);
@@ -87,7 +89,7 @@ public class PantallaSeleccion {
     app.background(0);
 
     app.fill(255);
-    app.textSize(22);
+    app.textSize(16);
     app.textAlign(PApplet.CENTER, PApplet.CENTER);
     app.text("SELECCIONAR MODULO", app.width / 2f, app.height * 0.12f);
 
@@ -96,7 +98,7 @@ public class PantallaSeleccion {
     app.line(50, app.height * 0.19f, app.width - 50, app.height * 0.19f);
 
     app.fill(255);
-    app.textSize(10);
+    app.textSize(8);
     app.text("W/S para navegar  |  ENTER para confirmar  |  ESC para volver", app.width / 2f, app.height * 0.24f);
 
     for (Boton b : botonesModulos) b.dibujar(app);
@@ -105,7 +107,7 @@ public class PantallaSeleccion {
 
     if (mensajeError != null) {
       app.fill(255);
-      app.textSize(10);
+      app.textSize(8);
       app.textAlign(PApplet.CENTER, PApplet.CENTER);
       app.text("ERROR: " + mensajeError, app.width / 2f, app.height * 0.94f);
     }
