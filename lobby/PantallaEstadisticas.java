@@ -11,7 +11,7 @@ public class PantallaEstadisticas {
   private static final float TEXT_DATOS  = 10;
 
   public PantallaEstadisticas(PApplet app, int anchoVentana, int altoVentana) {
-    fondoEstadisticas = app.loadImage("assets/background/fondo_estadisticas.png";
+    fondoEstadisticas = app.loadImage("assets/background/fondo_estadisticas.png");
     float bAncho = 220;
     float bAlto  = 44;
     botonVolver = new Boton(anchoVentana / 2f - bAncho / 2f, altoVentana * 0.88f, bAncho, bAlto, "VOLVER");
