@@ -40,7 +40,7 @@ public class PantallaSeleccion {
     for (int i = 0; i < modulos.size(); i++) {
       ModuloJuego m = modulos.get(i);
       Boton b = new Boton(anchoVentana / 2f - bAncho / 2f, inicioY + i * (bAlto + gap), bAncho, bAlto,
-          m.getNombreAvion() + "  [" + m.getNombreModulo() + "]");
+          m.getNombreAvion() );
       botonesModulos.add(b);
       nombresModulos.add(m.getNombreModulo());
     }
