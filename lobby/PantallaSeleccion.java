@@ -36,12 +36,14 @@ public class PantallaSeleccion {
     float bAlto = 44;
     float gap = 12;
     float totalH = modulos.size() * (bAlto + gap) - gap;
-    float inicioY = altoVentana * 0.35f - totalH / 2f;
+    float limiteInferiorInstrucciones = altoVentana * 0.28f; // margen bajo el texto de instrucciones
+    float centroIdeal = altoVentana * 0.35f - totalH / 2f;  // posicion centrada original
+    float inicioY = Math.max(centroIdeal, limiteInferiorInstrucciones);
 
     for (int i = 0; i < modulos.size(); i++) {
       ModuloJuego m = modulos.get(i);
       Boton b = new Boton(anchoVentana / 2f - bAncho / 2f, inicioY + i * (bAlto + gap), bAncho, bAlto,
-          m.getNombreAvion() + "  [" + m.getNombreModulo() + "]");
+          m.getNombreAvion() );
       botonesModulos.add(b);
       nombresModulos.add(m.getNombreModulo());
     }
@@ -94,6 +96,7 @@ public class PantallaSeleccion {
     }
 
     app.textSize(22);
+    app.fill(255);
     app.textAlign(PApplet.CENTER, PApplet.CENTER);
     dibujarTextoConBorde(app, "SELECCIONAR MODULO", app.width / 2f, app.height * 0.12f, 2);
 
@@ -104,6 +107,8 @@ public class PantallaSeleccion {
     app.textSize(10);
     dibujarTextoConBorde(app, "W/S para navegar  |  ENTER para confirmar  |  ESC para volver",
         app.width / 2f, app.height * 0.24f, 1);
+    app.fill(255);
+    app.text("W/S para navegar  |  ENTER para confirmar  |  ESC para volver", app.width / 2f, app.height * 0.24f);
 
     for (Boton b : botonesModulos) b.dibujar(app);
     botonEstadisticas.dibujar(app);
@@ -111,7 +116,7 @@ public class PantallaSeleccion {
 
     if (mensajeError != null) {
       app.fill(255);
-      app.textSize(10);
+      app.textSize(8);
       app.textAlign(PApplet.CENTER, PApplet.CENTER);
       dibujarTextoConBorde(app, "ERROR: " + mensajeError, app.width / 2f, app.height * 0.94f, 1);
     }

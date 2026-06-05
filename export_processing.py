@@ -28,6 +28,7 @@ Uso:
   python export_processing.py              # exporta todos los módulos
   python export_processing.py skyhawk     # exporta solo el módulo skyhawk
   python export_processing.py --dry-run   # muestra qué haría sin copiar nada
+  python export_processing.py --limpiar-estadisticas  # elimina carpeta estadisticas si existe
 """
 
 import sys
@@ -37,13 +38,14 @@ import argparse
 from pathlib import Path
 
 
-REPO_ROOT     = Path(__file__).parent           # carpeta donde está el script
-CONTRACTS_DIR = REPO_ROOT / "contracts"
-LOBBY_DIR     = REPO_ROOT / "lobby"
-MODULOS_DIR   = REPO_ROOT / "modulos"
-ASSETS_DIR    = REPO_ROOT / "assets"
-PDE_FILE      = REPO_ROOT / "Game1982.pde"
-EXPORT_DIR    = REPO_ROOT / "processing-export" / "Game1982"
+REPO_ROOT          = Path(__file__).parent
+CONTRACTS_DIR      = REPO_ROOT / "contracts"
+LOBBY_DIR          = REPO_ROOT / "lobby"
+MODULOS_DIR        = REPO_ROOT / "modulos"
+ASSETS_DIR         = REPO_ROOT / "assets"
+PDE_FILE           = REPO_ROOT / "Game1982.pde"
+EXPORT_DIR         = REPO_ROOT / "processing-export" / "Game1982"
+ESTADISTICAS_DIR   = EXPORT_DIR / "estadisticas"
 
 GREEN  = "\033[92m"
 YELLOW = "\033[93m"
@@ -57,6 +59,21 @@ def warn(msg):  print(f"  {YELLOW}⚠{RESET}  {msg}")
 def err(msg):   print(f"  {RED}✗{RESET}  {msg}")
 def info(msg):  print(f"  {GRAY}→{RESET}  {msg}")
 def head(msg):  print(f"\n{BOLD}{msg}{RESET}")
+
+
+def limpiar_estadisticas(dry_run: bool):
+    """Elimina la carpeta estadisticas/ dentro del export si existe."""
+    head("Limpiando carpeta estadisticas/...")
+    if not ESTADISTICAS_DIR.exists():
+        info("La carpeta estadisticas/ no existe, nada que limpiar.")
+        return
+    archivos = list(ESTADISTICAS_DIR.rglob("*"))
+    archivos = [f for f in archivos if f.is_file()]
+    if dry_run:
+        info(f"(dry-run) borraría estadisticas/ ({len(archivos)} archivos)")
+        return
+    shutil.rmtree(ESTADISTICAS_DIR)
+    ok(f"estadisticas/ eliminada ({len(archivos)} archivos borrados)")
 
 
 def copiar_java(src: Path, dest_dir: Path, dry_run: bool, etiqueta: str = ""):
@@ -241,11 +258,12 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Ejemplos:
-  python export_processing.py                    # exporta todos los módulos
-  python export_processing.py skyhawk pucara    # exporta solo esos módulos
-  python export_processing.py --dry-run         # muestra qué haría sin copiar
-  python export_processing.py --clean           # limpia la carpeta de exportación
-  python export_processing.py --list            # lista los módulos disponibles
+  python export_processing.py                         # exporta todos los módulos
+  python export_processing.py skyhawk pucara         # exporta solo esos módulos
+  python export_processing.py --dry-run              # muestra qué haría sin copiar
+  python export_processing.py --clean                # limpia la carpeta de exportación
+  python export_processing.py --list                 # lista los módulos disponibles
+  python export_processing.py --limpiar-estadisticas # elimina carpeta estadisticas/ si existe
         """
     )
     parser.add_argument(
@@ -263,6 +281,10 @@ Ejemplos:
     parser.add_argument(
         "--list", action="store_true",
         help="Lista los módulos disponibles y sale"
+    )
+    parser.add_argument(
+        "--limpiar-estadisticas", action="store_true", default=False,
+        help="Elimina la carpeta estadisticas/ generada por el juego (por defecto: desactivado)"
     )
 
     args = parser.parse_args()
@@ -283,6 +305,10 @@ Ejemplos:
 
     if args.clean:
         limpiar(args.dry_run)
+
+    # Se ejecuta antes de exportar para no regenerar archivos innecesarios
+    if args.limpiar_estadisticas:
+        limpiar_estadisticas(args.dry_run)
 
     filtro = args.modulos if args.modulos else None
     exportar(filtro, args.dry_run)
