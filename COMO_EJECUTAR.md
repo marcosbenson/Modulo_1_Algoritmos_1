@@ -63,8 +63,6 @@ Las estadísticas se guardan automáticamente en formato JSON en la carpeta
 homeJuego.registrarModulo(new TuAvion());
 ```
 
-5. Eliminar `ModuloPrueba.java` si ya no se necesita
-
 ---
 
 ## Estructura del proyecto
@@ -98,7 +96,6 @@ PantallaInicio.java
 PantallaSeleccion.java
 PantallaEstadisticas.java
 HomeJuego.java                   <- orquestador principal
-ModuloPrueba.java                <- modulo de prueba (removible)
 assets/fonts/                    <- fuente pixel art
 ```
 

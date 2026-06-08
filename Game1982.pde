@@ -12,7 +12,6 @@ void setup() {
 
   homeJuego = new HomeJuego(this);
   homeJuego.iniciarHome();
-  homeJuego.registrarModulo(new ModuloPrueba());
   homeJuego.registrarModulo(new ModuloSkyhawk());
 
 }

@@ -37,7 +37,7 @@ class ModuloSkyhawk implements ModuloJuego {
   public String getDescripcion()  { return "Shooter vertical estilo 1942"; }
   public String getNombreAvion()  { return "A-4 SKYHAWK"; }
 
-  // ---------- ciclo de vida (patron State, igual que ModuloPrueba) ----------
+  // ---------- ciclo de vida (patron State) ----------
   public void inicializarContexto(ContextoJuego ctx) { this.contexto = ctx; }
 
   public void iniciar() throws EstadoInvalidoException {

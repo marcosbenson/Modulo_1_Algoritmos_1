@@ -88,9 +88,6 @@ Game1982.pde                     <- punto de entrada (Processing IDE)
 ├── Orquestador
 │   └── HomeJuego.java           <- coordina todo el Home, gestores y ciclo de vida
 │
-├── Modulo de prueba
-│   └── ModuloPrueba.java        <- modulo de prueba removible (ver abajo)
-│
 └── assets/
     └── fonts/
         └── PressStart2P-Regular.ttf <- fuente pixel art
@@ -138,20 +135,6 @@ void dibujar(PApplet app);
 ```java
 homeJuego.registrarModulo(new AvionSkyhawk());
 ```
-
-5. Eliminar `ModuloPrueba.java` si ya no se necesita
-
-> Ver `ModuloPrueba.java` como ejemplo de implementación completa.
-
----
-
-## Módulo de prueba
-
-`ModuloPrueba.java` es un módulo de integración que simula una partida de 5 segundos.
-Sirve para probar el Home sin necesitar los módulos reales.
-**Es removible** — cuando todos los aviones estén integrados se puede eliminar.
-
----
 
 ## Estadísticas
 
