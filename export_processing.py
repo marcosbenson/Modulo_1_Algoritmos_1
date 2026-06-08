@@ -37,6 +37,16 @@ import shutil
 import argparse
 from pathlib import Path
 
+# Windows: la consola por defecto (cp1252) no sabe imprimir los simbolos Unicode
+# del script (simbolos de check, flechas, lineas) y tira UnicodeEncodeError cuando
+# la salida se redirige. Forzamos UTF-8 en la salida: no afecta a Mac/Linux (ya usan
+# UTF-8) y solo cambia lo que se IMPRIME en pantalla, nunca lo que se copia.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
 
 REPO_ROOT          = Path(__file__).parent
 CONTRACTS_DIR      = REPO_ROOT / "contracts"
@@ -60,6 +70,17 @@ def err(msg):   print(f"  {RED}✗{RESET}  {msg}")
 def info(msg):  print(f"  {GRAY}→{RESET}  {msg}")
 def head(msg):  print(f"\n{BOLD}{msg}{RESET}")
 
+# Extensiones de codigo que entiende Processing: .java y .pde (ambos son tabs del sketch)
+EXTENSIONES_FUENTE = ("*.java", "*.pde")
+
+
+def listar_fuentes(carpeta):
+    """Devuelve los archivos de codigo (.java y .pde) de una carpeta, ordenados."""
+    archivos = []
+    for patron in EXTENSIONES_FUENTE:
+        archivos += carpeta.glob(patron)
+    return sorted(archivos)
+
 
 def limpiar_estadisticas(dry_run: bool):
     """Elimina la carpeta estadisticas/ dentro del export si existe."""
@@ -77,7 +98,7 @@ def limpiar_estadisticas(dry_run: bool):
 
 
 def copiar_java(src: Path, dest_dir: Path, dry_run: bool, etiqueta: str = ""):
-    """Copia un .java a dest_dir. Si ya existe y es idéntico, lo indica."""
+    """Copia un .java/.pde a dest_dir. Si ya existe y es idéntico, lo indica."""
     dest = dest_dir / src.name
     if dest.exists() and dest.read_bytes() == src.read_bytes():
         info(f"  sin cambios   {src.name}  {GRAY}({etiqueta}){RESET}")
@@ -159,18 +180,18 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
     else:
         info("(modo dry-run — no se modifica nada)")
 
-    javas_contracts = sorted(CONTRACTS_DIR.glob("*.java"))
-    javas_lobby     = sorted(LOBBY_DIR.glob("*.java"))
+    javas_contracts = listar_fuentes(CONTRACTS_DIR)
+    javas_lobby     = listar_fuentes(LOBBY_DIR)
 
     modulos_disponibles = listar_modulos()
     if not modulos_disponibles:
         warn("No se encontraron módulos en modulos/")
-    
+
     modulos_a_exportar = []
     for m in modulos_disponibles:
         if modulos_filtro is None or m in modulos_filtro:
             modulos_a_exportar.append(m)
-    
+
     if modulos_filtro:
         no_encontrados = [m for m in modulos_filtro if m not in modulos_disponibles]
         for m in no_encontrados:
@@ -178,7 +199,7 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
 
     javas_modulos = []
     for m in modulos_a_exportar:
-        javas_modulos += sorted((MODULOS_DIR / m).glob("*.java"))
+        javas_modulos += listar_fuentes(MODULOS_DIR / m)
 
     todos = javas_contracts + javas_lobby + javas_modulos
     conflictos = detectar_conflictos(todos)
@@ -204,9 +225,9 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
         head(f"Copiando módulos: {', '.join(modulos_a_exportar)}")
         for m in modulos_a_exportar:
             modulo_dir = MODULOS_DIR / m
-            javas = sorted(modulo_dir.glob("*.java"))
+            javas = listar_fuentes(modulo_dir)
             if not javas:
-                warn(f"  [{m}] no tiene archivos .java")
+                warn(f"  [{m}] no tiene archivos .java ni .pde")
                 continue
             for java in javas:
                 copiar_java(java, EXPORT_DIR, dry_run, m)
@@ -225,11 +246,11 @@ def exportar(modulos_filtro: list[str] | None, dry_run: bool):
 
     head("Resumen")
     if not dry_run:
-        javas_en_export = list(EXPORT_DIR.glob("*.java"))
+        javas_en_export = list(EXPORT_DIR.glob("*.java")) + list(EXPORT_DIR.glob("*.pde"))
         assets_en_export = list((EXPORT_DIR / "data").rglob("*"))
         assets_en_export += list((EXPORT_DIR / "assets").rglob("*"))
         assets_en_export = [f for f in assets_en_export if f.is_file()]
-        ok(f"{len(javas_en_export)} archivos .java en processing-export/Game1982/")
+        ok(f"{len(javas_en_export)} archivos .java/.pde en processing-export/Game1982/")
         ok(f"{len(assets_en_export)} assets en processing-export/Game1982/")
         print()
         print(f"  {BOLD}Abrir desde Processing IDE:{RESET}")
@@ -297,8 +318,8 @@ Ejemplos:
         if modulos:
             head("Módulos disponibles en modulos/:")
             for m in modulos:
-                javas = list((MODULOS_DIR / m).glob("*.java"))
-                info(f"  {m}  {GRAY}({len(javas)} .java){RESET}")
+                fuentes = listar_fuentes(MODULOS_DIR / m)
+                info(f"  {m}  {GRAY}({len(fuentes)} archivos){RESET}")
         else:
             warn("No se encontraron módulos en modulos/")
         return
@@ -306,7 +327,6 @@ Ejemplos:
     if args.clean:
         limpiar(args.dry_run)
 
-    # Se ejecuta antes de exportar para no regenerar archivos innecesarios
     if args.limpiar_estadisticas:
         limpiar_estadisticas(args.dry_run)
 
