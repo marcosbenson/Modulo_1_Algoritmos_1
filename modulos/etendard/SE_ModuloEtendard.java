@@ -136,6 +136,7 @@ public class SE_ModuloEtendard implements ModuloJuego {
     public void reset() {
         this.estadoCicloVida = new NoIniciadoState();
         this.coreJuego.setEstadoCicloVida(this.estadoCicloVida);
+        this.coreJuego.resetHistorial(); // RESETEAR EL HISTORIAL COMPLETAMENTE
         this.coreJuego.initGameVariables();
     }
 

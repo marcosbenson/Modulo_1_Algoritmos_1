@@ -129,6 +129,10 @@ public class SE_GestorPrincipal {
         }
     }
 
+public void resetHistorial() {
+    this.historial = new SE_HistorialSesion();
+}
+
     public void registrarVictoria() {
         if (!victoriaRegistrada) {
             consolidarPartida(true);

@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +11,14 @@ public class SE_HistorialSesion {
     private SE_EstadisticasPartida partidaActual;
 
     public SE_HistorialSesion() {
+    }
+
+    /**
+     * Resetea completamente el historial para una nueva sesión limpia.
+     */
+    public void reset() {
+        registroPartidas.clear();
+        partidaActual = null;
     }
 
     /**
