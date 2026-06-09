@@ -185,71 +185,76 @@ public class SE_GestorGrafico {
    * síncrona.
    */
   public void renderizarSegunEstado(EstadoJuego estado) {
-    // Limpiar el canvas antes de cada frame para evitar que se acumulen
-    app.background(0);
+    app.pushStyle();
+    try {
+      // Limpiar el canvas antes de cada frame para evitar que se acumulen
+      app.background(0);
 
-    String nombre = estado.getNombre();
-    switch (nombre) {
-      case "INICIANDO":
-        dibujarFondo(0);
-        dibujarMenu();
-        break;
+      String nombre = estado.getNombre();
+      switch (nombre) {
+        case "INICIANDO":
+          dibujarFondo(0);
+          dibujarMenu();
+          break;
 
-      case "EN_EJECUCION":
-        dibujarFondo(gp.getNivel().getTiempoNivel());
+        case "EN_EJECUCION":
+          dibujarFondo(gp.getNivel().getTiempoNivel());
 
-        boolean naveViva = gp.entidades.hayNavesVivas();
-        boolean jefeDerrotado = gp.getNivel().isBossSpawned() && !gp.entidades.hayBossVivo();
+          boolean naveViva = gp.entidades.hayNavesVivas();
+          boolean jefeDerrotado = gp.getNivel().isBossSpawned() && !gp.entidades.hayBossVivo();
 
-        if (naveViva && !jefeDerrotado) {
-          gp.getNivel().actualizar(gp, gp.entidades);
-          gp.entidades.procesar(false);
-        } else {
-          gp.entidades.procesar(true); // Pausar entidades
-          app.textAlign(PApplet.CENTER, PApplet.CENTER);
-          if (!naveViva) {
-            app.fill(255, 50, 50);
-            app.textSize(40);
-            app.text("GAME OVER", app.width / 2.0f, app.height / 2.0f - 20);
-            app.textSize(20);
-            app.fill(255);
-            app.text("Presiona Q para salir", app.width / 2.0f, app.height / 2.0f + 30);
-          } else if (jefeDerrotado) {
-            app.fill(50, 255, 50);
-            app.textSize(40);
-            app.text("VICTORIA", app.width / 2.0f, app.height / 2.0f - 20);
-            app.textSize(20);
-            app.fill(255);
-            app.text("Presiona Q para salir", app.width / 2.0f, app.height / 2.0f + 30);
+          if (naveViva && !jefeDerrotado) {
+            gp.getNivel().actualizar(gp, gp.entidades);
+            gp.entidades.procesar(false);
+          } else {
+            gp.entidades.procesar(true); // Pausar entidades
+            app.textAlign(PApplet.CENTER, PApplet.CENTER);
+            if (!naveViva) {
+              app.fill(255, 50, 50);
+              app.textSize(40);
+              app.text("GAME OVER", app.width / 2.0f, app.height / 2.0f - 20);
+              app.textSize(20);
+              app.fill(255);
+              app.text("Presiona Q para salir", app.width / 2.0f, app.height / 2.0f + 30);
+            } else if (jefeDerrotado) {
+              app.fill(50, 255, 50);
+              app.textSize(40);
+              app.text("VICTORIA", app.width / 2.0f, app.height / 2.0f - 20);
+              app.textSize(20);
+              app.fill(255);
+              app.text("Presiona Q para salir", app.width / 2.0f, app.height / 2.0f + 30);
 
-            if (!gp.victoriaRegistrada) {
-              gp.registrarVictoria();
+              if (!gp.victoriaRegistrada) {
+                gp.registrarVictoria();
+              }
             }
           }
-        }
 
-        SE_EstadisticasPartida p1 = gp.getHistorial().getPartidaActual();
-        dibujarUI(p1 != null ? p1.getScore() : 0);
-        break;
+          SE_EstadisticasPartida p1 = gp.getHistorial().getPartidaActual();
+          dibujarUI(p1 != null ? p1.getScore() : 0);
+          break;
 
-      case "PAUSADO":
-        dibujarFondo(gp.getNivel().getTiempoNivel());
-        gp.entidades.procesar(true);
-        SE_EstadisticasPartida p2 = gp.getHistorial().getPartidaActual();
-        dibujarUI(p2 != null ? p2.getScore() : 0);
-        dibujarPantallaPausa();
-        break;
+        case "PAUSADO":
+          dibujarFondo(gp.getNivel().getTiempoNivel());
+          gp.entidades.procesar(true);
+          SE_EstadisticasPartida p2 = gp.getHistorial().getPartidaActual();
+          dibujarUI(p2 != null ? p2.getScore() : 0);
+          dibujarPantallaPausa();
+          break;
 
-      case "FINALIZADO":
-        dibujarFondo(gp.getNivel().getTiempoNivel());
-        boolean gano = (gp.getHistorial().getPartidaActual() != null
-            && gp.getHistorial().getPartidaActual().isVictoria());
-        int est = gano ? SE_GestorPrincipal.ESTADO_WIN : SE_GestorPrincipal.ESTADO_GAMEOVER;
-        String tit = gano ? "STAGE CLEAR!" : "GAME OVER";
-        String sub = gano ? "MISION CUMPLIDA - Presiona 'R'" : "Presiona 'R' para volver al MENU";
+        case "FINALIZADO":
+          dibujarFondo(gp.getNivel().getTiempoNivel());
+          boolean gano = (gp.getHistorial().getPartidaActual() != null
+              && gp.getHistorial().getPartidaActual().isVictoria());
+          int est = gano ? SE_GestorPrincipal.ESTADO_WIN : SE_GestorPrincipal.ESTADO_GAMEOVER;
+          String tit = gano ? "STAGE CLEAR!" : "GAME OVER";
+          String sub = gano ? "MISION CUMPLIDA - Presiona 'R'" : "Presiona 'R' para volver al MENU";
 
-        dibujarGameOver(tit, sub, est, gp, gp.statsGenerales);
-        break;
+          dibujarGameOver(tit, sub, est, gp, gp.statsGenerales);
+          break;
+      }
+    } finally {
+      app.popStyle();
     }
   }
 }

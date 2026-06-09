@@ -19,7 +19,10 @@ public class Boton {
   }
 
   public void dibujar(PApplet app) {
+    app.pushStyle();
+
     // 1. Dibujar el rectangulo usando SIEMPRE x, y, ancho, alto (mismo origen que estaEncima)
+    app.rectMode(PApplet.CORNER);
     if (seleccionado) {
       app.stroke(0, 255, 0);
       app.fill(0, 51, 0);
@@ -43,6 +46,8 @@ public class Boton {
     app.fill(255);
     app.textAlign(PApplet.LEFT, PApplet.CENTER);
     app.text(textoFinal, x + PADDING_IZQUIERDA, y + alto / 2);
+
+    app.popStyle();
   }
 
   /** Recorta el texto agregando "..." si supera el ancho maximo disponible. */

@@ -89,6 +89,7 @@ public class PantallaSeleccion {
   public void setMensajeError(String msg) { this.mensajeError = msg; }
 
   public void dibujar(PApplet app) {
+    app.imageMode(PApplet.CORNER);
     if (fondoSeleccion != null) {
       app.image(fondoSeleccion, 0, 0, app.width, app.height);
     } else {

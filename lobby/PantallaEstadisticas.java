@@ -19,6 +19,7 @@ public class PantallaEstadisticas {
   }
 
   public void dibujar(PApplet app, List<EstadisticasGenerales> estadisticas, int puntajeTotal) {
+    app.imageMode(PApplet.CORNER);
     if (fondoEstadisticas != null) {
       app.image(fondoEstadisticas, 0, 0, app.width, app.height);
     } else {
