@@ -13,6 +13,7 @@ void setup() {
   homeJuego = new HomeJuego(this);
   homeJuego.iniciarHome();
   homeJuego.registrarModulo(new ModuloSkyhawk());
+  homeJuego.registrarModulo(new SE_ModuloEtendard(this));
 
 }
 
