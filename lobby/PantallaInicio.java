@@ -6,23 +6,26 @@ public class PantallaInicio {
 
   public PantallaInicio(PApplet app, int anchoVentana, int altoVentana) {
     fondoHome = app.loadImage("assets/background/fondo_home.png");
-
     float bAncho = 280;
-    float bAlto = 50;
+    float bAlto  = 50;
     botonStart = new Boton(anchoVentana / 2f - bAncho / 2f, altoVentana * 0.65f, bAncho, bAlto, "PRESS START");
     botonStart.setSeleccionado(true);
   }
 
   public void dibujar(PApplet app) {
+    app.pushStyle();
+
     if (fondoHome != null) {
+      app.imageMode(PApplet.CORNER);
       app.image(fondoHome, 0, 0, app.width, app.height);
     } else {
       app.background(0);
     }
 
+    app.textAlign(PApplet.CENTER, PApplet.CENTER);
+
     // título principal
     app.textSize(72);
-    app.textAlign(PApplet.CENTER, PApplet.CENTER);
     dibujarTextoConBorde(app, "1982", app.width / 2f, app.height * 0.22f, 3);
 
     app.textSize(24);
@@ -36,6 +39,8 @@ public class PantallaInicio {
     app.textSize(15);
     dibujarTextoConBorde(app, "UN SHOOTER AEREO DEL CONFLICTO DEL ATLANTICO SUR", app.width / 2f, app.height * 0.48f, 2);
 
+    app.popStyle();
+
     botonStart.dibujar(app);
   }
 
@@ -48,7 +53,6 @@ public class PantallaInicio {
         }
       }
     }
-
     app.fill(255);
     app.text(texto, x, y);
   }

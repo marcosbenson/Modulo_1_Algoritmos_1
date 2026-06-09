@@ -9,7 +9,6 @@ public class HomeJuego implements IModuloObserver {
   private PantallaSeleccion pantallaSeleccion;
   private PantallaEstadisticas pantallaEstadisticas;
   private ModuloJuego moduloActual;
-  private int tiempoJuegoFrames;
   private PApplet app;
 
   public HomeJuego(PApplet app) {
@@ -34,7 +33,6 @@ public class HomeJuego implements IModuloObserver {
     pantallaInicio = new PantallaInicio(app, app.width, app.height);
     pantallaSeleccion = new PantallaSeleccion(app, app.width, app.height);
     pantallaEstadisticas = new PantallaEstadisticas(app, app.width, app.height);
-    tiempoJuegoFrames = 0;
   }
 
   public void dibujar() {
