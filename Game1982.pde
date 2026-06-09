@@ -15,7 +15,7 @@ void setup() {
   homeJuego.registrarModulo(new ModuloSkyhawk());
   homeJuego.registrarModulo(new SE_ModuloEtendard(this));
   homeJuego.registrarModulo(new ModuloPucara());
-  homeJuego.registrarModulo(new ModuloAermacchi())
+  homeJuego.registrarModulo(new ModuloAermacchi());
 
 }
 
